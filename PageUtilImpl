@@ -1,0 +1,176 @@
+package com.crccmall.util.page.impl;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Component;
+
+import com.crccmall.util.page.PageBox;
+import com.crccmall.util.page.PageUtil;
+
+@Component
+public class PageUtilImpl implements PageUtil{
+
+	public PageBox create(List<Object> data, Integer current_page, Integer rows, Integer total_rows, Integer index_length){
+		PageBox pageBox = new PageBox();
+		
+		pageBox.setData(data);
+		pageBox.setCurrent_page(current_page);
+		pageBox.setRows(rows);
+		pageBox.setTotal_rows(total_rows);
+		pageBox.setIndex_length(index_length);
+		Integer total_page = (int)(Math.ceil(1.0 * total_rows / rows));
+		pageBox.setTotal_page(total_page);
+		Integer pre_page = current_page - 1;
+		Integer next_page = current_page + 1;
+		Boolean pre_sign = true;
+		Boolean next_sign = true;
+		if(pre_page < 1){
+			pre_sign = false;
+		}
+		if(next_page > total_page){
+			next_sign = false;
+		}
+		pageBox.setPre_page(pre_page);
+		pageBox.setNext_page(next_page);
+		pageBox.setPre_sign(pre_sign);
+		pageBox.setNext_sign(next_sign);
+		
+		List<Integer> indexs = new ArrayList<Integer>();
+		if(total_page < index_length){
+			for(int i = 1; i <= total_page; i++){
+				indexs.add(i);
+			}
+		}else{
+			Integer first = current_page - ((index_length - 1) /2);
+			for(int i = first; i < first + index_length; i++){
+				indexs.add(i);
+			}
+			if(first < 1){
+				Integer step = 1 - first;
+				List<Integer> indexs_n = new ArrayList<Integer>();
+				for(Integer i:indexs){
+					indexs_n.add(i + step);
+				}
+				indexs = indexs_n;
+			}
+			Integer last = indexs.get(indexs.size() - 1);
+			if(last > total_page){
+				List<Integer> indexs_n = new ArrayList<Integer>();
+				for(Integer i:indexs){
+					if(i > total_page){
+						break;
+					}else{
+						indexs_n.add(i);
+					}
+				}
+				indexs = indexs_n;
+			}
+			Integer size = indexs.size();
+			Integer step = index_length - size;
+			if(size > 0){
+				List<Integer> indexs_n = new ArrayList<Integer>();
+				for(int i = 1; i <= step; i++){
+					indexs_n.add(first - step -1 + i);
+				}
+				for(Integer i:indexs){
+					indexs_n.add(i);
+				}
+				indexs = indexs_n;
+			}
+		}
+		pageBox.setIndexs(indexs);
+		
+		return pageBox;
+	}
+	
+	
+	
+	public PageBox create(List<Object> data, Integer current_page, Integer rows, Integer total_rows){
+		return create(data, current_page, rows, total_rows, 5);
+	}
+
+
+	
+	public PageBox createMapListPage(List<Map<String, Object>> data, Integer current_page, Integer rows,
+			Integer total_rows) {
+		// TODO Auto-generated method stub
+		return createMapListPage(data,current_page,rows,total_rows,5);
+	}
+	
+	public PageBox createMapListPage(List<Map<String, Object>> data, Integer current_page, Integer rows, Integer total_rows, Integer index_length){
+		PageBox pageBox = new PageBox();
+		
+		//pageBox.setData(data);
+		pageBox.setDataForMap(data);
+		pageBox.setCurrent_page(current_page);
+		pageBox.setRows(rows);
+		pageBox.setTotal_rows(total_rows);
+		pageBox.setIndex_length(index_length);
+		Integer total_page = (int)(Math.ceil(1.0 * total_rows / rows));
+		pageBox.setTotal_page(total_page);
+		Integer pre_page = current_page - 1;
+		Integer next_page = current_page + 1;
+		Boolean pre_sign = true;
+		Boolean next_sign = true;
+		if(pre_page < 1){
+			pre_sign = false;
+		}
+		if(next_page > total_page){
+			next_sign = false;
+		}
+		pageBox.setPre_page(pre_page);
+		pageBox.setNext_page(next_page);
+		pageBox.setPre_sign(pre_sign);
+		pageBox.setNext_sign(next_sign);
+		
+		List<Integer> indexs = new ArrayList<Integer>();
+		if(total_page < index_length){
+			for(int i = 1; i <= total_page; i++){
+				indexs.add(i);
+			}
+		}else{
+			Integer first = current_page - ((index_length - 1) /2);
+			for(int i = first; i < first + index_length; i++){
+				indexs.add(i);
+			}
+			if(first < 1){
+				Integer step = 1 - first;
+				List<Integer> indexs_n = new ArrayList<Integer>();
+				for(Integer i:indexs){
+					indexs_n.add(i + step);
+				}
+				indexs = indexs_n;
+			}
+			Integer last = indexs.get(indexs.size() - 1);
+			if(last > total_page){
+				List<Integer> indexs_n = new ArrayList<Integer>();
+				for(Integer i:indexs){
+					if(i > total_page){
+						break;
+					}else{
+						indexs_n.add(i);
+					}
+				}
+				indexs = indexs_n;
+			}
+			Integer size = indexs.size();
+			Integer step = index_length - size;
+			if(size > 0){
+				List<Integer> indexs_n = new ArrayList<Integer>();
+				for(int i = 1; i <= step; i++){
+					indexs_n.add(first - step -1 + i);
+				}
+				for(Integer i:indexs){
+					indexs_n.add(i);
+				}
+				indexs = indexs_n;
+			}
+		}
+		pageBox.setIndexs(indexs);
+		
+		return pageBox;
+	}
+}
