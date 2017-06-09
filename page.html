@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<#include "/default/common/header-inc.htm" />
+<title>消息中心</title>
+	<link rel="stylesheet" href="${__ctx}res/default/css/bootstrap.min.css">
+    <link rel="stylesheet" href="${__ctx}res/default/css/jquery.datetimepicker.css">
+    <link rel="stylesheet" href="${__ctx}res/default/css/common.css">
+    <link rel="stylesheet" href="${__ctx}res/default/css/buy-head.css">
+    <script src="${__ctx}res/default/js/jquery-1.11.2.min.js"></script>
+    <script src="${__ctx}res/default/js/bootstrap.min.js"></script>
+    <script src="${__ctx}res/default/js/bootstrap-filestyle.min.js"></script>
+    <script src="${__ctx}res/default/js/jquery.datetimepicker.js"></script>
+    <script src="${__ctx}res/default/js/common-all.js"></script>
+    <script src="${__web}res/default/js/layer/layer.js"></script>
+	<script src="${__web}res/default/plug/datatables/jquery.dataTables.min.js"></script>
+	<script src="${__web}res/default/js/page.js"></script>
+
+	<script type="text/javascript" src="${__web}res/default/js/My97DatePicker/WdatePicker.js"> </script>
+	
+</head>
+<body>
+<#include "/default/common/top.htm"/>
+	
+	<div class="shop-content">
+		<div class="container">
+	<#include "/default/common/nav.htm"/>
+	
+		<div class="bs-center pull-right">
+          <div class="bs-part clearfix">
+         
+            <h2>消息中心</h2>
+            <form>
+                 <table class="table table-hover">  <!-- table-hover -->
+                     <thead>
+                         <th width="15%"><select class="form-control wid2"><option checked="checked">消息类型</option></select></th>
+                         <th width="35%">标题</th>
+                         <th width="20%"><select class="form-control wid2"><option checked="checked">发布时间</option></select></th>
+                         <th width="20%">操作</th>
+                     </thead>
+                      <tbody>
+                          <#list messageList as message>
+                        <tr>
+                       		 <td>${message.message_type}</td>
+           					<td>${message.tittle}</td>
+           					<td>${message.send_time}</td>
+                            <td>
+                            <a href="javascript:void(0);"  class="text-blue" onclick="messageContent('${message.tittle}','${message.message_type}','${message.send_date}','${message.content}')">查看</a>
+                           
+                            <a href="javascript:void(0);" class="text-blue" onclick='del(this,${message.uuid});'>删除</a></td>
+                        </tr>
+                        
+                        </#list>   
+                  
+                     </tbody>
+                     
+                      <!-- 表格无数据时显示 -->
+                    <!-- <tbody>  
+                      <tr>
+                        <td colspan="4" height="100" class="text-center font-16text- gray"><i class="glyphicon  glyphicon-exclamation-sign"></i><span class="mar-lr-5">暂无数据</span></td>
+                      </tr>
+                    </tbody> -->
+
+                 </table>
+             </form>
+               <div class="page">
+               	  共有<span>${page.total_rows}</span>条,共<span>${page.total_page}</span>页,当前页为第<span>${page.current_page}</span>页
+                 <div class="bor">
+                     <a class="dif page_index" href="1" >«</a>
+                <#if page.pre_sign > <a href="${page.pre_page}" class="glyphicon glyphicon-menu-left page_index">‹</a> </#if>
+                <#list page.indexs as index>
+					<a class="text-blue page_index"  href="${index}">${index}</a>
+				</#list>
+                <#if page.next_sign> <a href="${page.next_page}" class="glyphicon glyphicon-menu-right page_index">›</a> </#if>
+                     <a class="dif last page_index" href="${page.total_page}">»</a>
+                 </div>
+                 <input type="text" class="form-control wid" />
+                 <a class="btn"  onclick="pageBox.jump($(this).prev().val())">GO</a>
+             </div>       
+      
+           </div>      
+ 
+		<div class="modal fade" id="myModalMore">
+          <div class="modal-dialog">
+            <div class="modal-content">
+            
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h2 class="title">消息详情</h2>
+              </div>
+                
+              <div class="modal-body modal-body-info gradeUpdate">
+               
+                 <ul >
+                   <li><h2 id="conTittle" ></h2></li>
+                   <li class="mar-left-10"id="conDateTime" ></li>
+                 </ul>
+                 <hr>
+                 <div class="line-height-25"  id="conContente">
+                 
+               </div>             
+              </div>
+
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+              </div> 
+              
+            </div>  
+          </div>
+  </div>		
+				
+   </div>
+   <#include "/default/common/foot.htm"/>
+</body>
+<script type="text/javascript">
+ //删除表中的一行
+function messageContent(ctittle,ctype,ctime,ccontent){
+	 
+	 $("#conTittle").text('【'+ctype+'】'+ctittle);
+	 $("#conDateTime").text(ctime);
+	 $("#conContente").text(ccontent);
+	 $('#myModalMore').modal('show')
+}
+//删除功能
+function del(obj,deleteById)
+{
+var tr=obj.parentNode.parentNode;
+tr.parentNode.removeChild(tr);
+$.post("${__web}message/delete",{uuid:deleteById},function(data,status){	
+})
+
+}
+
+		
+
+
+function c(){
+var pageNo = $(".yema").val();
+if(pageNo==null|| pageNo==""){
+	layer.alert("请输入页码！");
+}else{
+	List(pageNo);
+}
+}
+$(document).on("click",".mypage",function(){
+var pageNo=$(this).attr("data");
+List(pageNo);
+})
+$(document).on("click","#search",function(){
+var time1 = $("#publishTime1").val();
+var time2 = $("#publishTime1").val();
+//alert(time1);
+//alert(time2);
+//return;
+List(1);
+})
+function List(page) {
+window.location.href="${__web}seller/message?currentPage="+page
+}
+
+
+
+
+
+</script>
+</html>
